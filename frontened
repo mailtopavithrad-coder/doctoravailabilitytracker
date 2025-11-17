@@ -1,0 +1,79 @@
+package pavithra;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class DoctorAvailabilityTracker extends JFrame {
+    JTextField nameField, specField, dateField, timeField;
+    JComboBox<String> statusBox;
+    JButton submitBtn;
+
+    Connection conn;
+
+    public DoctorAvailabilityTracker() {
+        setTitle("Doctor Availability Tracker");
+        setSize(400, 300);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new GridLayout(6, 2));
+
+        nameField = new JTextField();
+        specField = new JTextField();
+        dateField = new JTextField("YYYY-MM-DD");
+        timeField = new JTextField("HH:MM");
+        statusBox = new JComboBox<>(new String[]{"Available", "Unavailable"});
+        submitBtn = new JButton("Add Availability");
+
+        add(new JLabel("Doctor Name:"));
+        add(nameField);
+        add(new JLabel("Specialization:"));
+        add(specField);
+        add(new JLabel("Available Date:"));
+        add(dateField);
+        add(new JLabel("Available Time:"));
+        add(timeField);
+        add(new JLabel("Status:"));
+        add(statusBox);
+        add(new JLabel(""));
+        add(submitBtn);
+
+        connectDB();
+        submitBtn.addActionListener(e -> insertAvailability());
+
+        setVisible(true);
+    }
+
+    void connectDB() {
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/doctor_tracker4", "root", "miju");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Database connection failed: " + e.getMessage());
+        }
+    }
+
+    void insertAvailability() {
+        String name = nameField.getText();
+        String spec = specField.getText();
+        String date = dateField.getText();
+        String time = timeField.getText();
+        String status = (String) statusBox.getSelectedItem();
+
+        try {
+            String sql = "INSERT INTO doctor_availability (doctor_name, specialization, available_date, available_time, status) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, name);
+            stmt.setString(2, spec);
+            stmt.setString(3, date);
+            stmt.setString(4, time);
+            stmt.setString(5, status);
+            stmt.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Availability added successfully!");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        new DoctorAvailabilityTracker();
+    }
+}
