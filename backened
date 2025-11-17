@@ -1,0 +1,13 @@
+CREATE DATABASE doctor_tracker4;
+
+USE doctor_tracker4;
+
+CREATE TABLE doctor_availability (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    doctor_name VARCHAR(100),
+    specialization VARCHAR(100),
+    available_date DATE,
+    available_time VARCHAR(20),
+    status VARCHAR(20)
+);
+select * from doctor_availability;
